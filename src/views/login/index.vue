@@ -1,18 +1,23 @@
 <template>
   <div>
     <!-- 导航栏 -->
-    <van-nav-bar class="navbar" title="登录" left-arrow>
+    <van-nav-bar
+      class="navbar"
+      title="登录"
+      left-arrow
+      @click-left="onClickLeft"
+    >
       <template #left>
         <van-icon name="cross" />
       </template>
     </van-nav-bar>
     <!-- 表单 -->
-    <van-form @submit="login" class="form">
+    <van-form ref="form" @submit="login" class="form">
       <van-field
         v-model="mobile"
         name="mobile"
         placeholder="请输入手机号"
-        :rules="[{ required: true, message: '请输入手机号' }]"
+        :rules="mobileRules"
       >
         <template #label>
           <span class="iconfont icon-shouji"></span>
@@ -22,13 +27,25 @@
         v-model="code"
         name="code"
         placeholder="请输入验证码"
-        :rules="[{ required: true, message: '请输入验证码' }]"
+        :rules="codeRules"
       >
         <template #label>
           <span class="iconfont icon-yanzhengma"></span>
         </template>
         <template #button>
-          <van-button round size="mini" class="mbtn">发送验证码</van-button>
+          <van-count-down
+            :time="3 * 1000"
+            v-if="isShow"
+            @finish="isShow = false"
+          />
+          <van-button
+            v-else
+            round
+            size="mini"
+            class="mbtn"
+            @click.prevent="sendCode"
+            >发送验证码</van-button
+          >
         </template>
       </van-field>
       <div style="margin: 16px">
@@ -39,13 +56,17 @@
 </template>
 
 <script>
-import { login } from '@/api/user'
+import { login, sendCode } from '@/api/user'
+import { mobileRules, codeRules } from './rules'
 export default {
   name: 'MyLogin',
   data() {
     return {
       mobile: '',
-      code: ''
+      code: '',
+      mobileRules,
+      codeRules,
+      isShow: false
     }
   },
   methods: {
@@ -53,8 +74,49 @@ export default {
       this.$router.back()
     },
     async login() {
-      const res = await login(this.mobile, this.code)
-      console.log(res)
+      this.$toast.loading({
+        message: 'loading....',
+        forbidClick: true
+      })
+      try {
+        const res = await login(this.mobile, this.code)
+        this.$store.commit('setUser', res.data.data)
+        this.$router.push('/profile')
+        console.log(res)
+        this.$toast.success('登录成功')
+      } catch (error) {
+        const status = error.response.status
+        let message = '服务端错误'
+        if (status === 400) {
+          message = error.response.data.message
+        }
+        this.$toast.fail(message)
+        // switch (status) {
+        //   case 400:
+        //     this.$toast.fail(error.response.data.message)
+        //     break
+        //   case 507:
+        //     this.$toast.fail('登录错误~请刷新')
+        //     break
+        //   default:
+        //     this.$toast.fail('登录错误~请刷新')
+        //     break
+        // }
+      }
+    },
+    async sendCode() {
+      try {
+        await this.$refs.form.validate('mobile')
+        await sendCode(this.mobile)
+        this.isShow = true
+      } catch (error) {
+        const status = error.response.status
+        if (status === 404 || status === 429) {
+          this.$toast.fail(error.response.data.message)
+        } else {
+          this.$toast.fail('非法手机号')
+        }
+      }
     }
   }
 }
