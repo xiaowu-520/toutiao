@@ -22,7 +22,7 @@
           </template>
         </van-tabbar-item>
         <van-tabbar-item replace to="/profile">
-          <span>我的</span>
+          <span>{{ $store.state.user.token ? '我的' : '未登录' }}</span>
           <template #icon>
             <span class="iconfont icon-wode"></span>
           </template>
