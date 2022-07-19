@@ -91,7 +91,7 @@ export default {
     ChangeActive(active) {
       this.active = active
     },
-    async AddMyChannel(channel) {
+    async AddChannel(channel) {
       // 添加频道
       this.MyChannels.push(channel)
       if (!this.isLogin) {
