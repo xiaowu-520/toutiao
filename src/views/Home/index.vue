@@ -2,7 +2,9 @@
   <div>
     <van-nav-bar class="navbar">
       <template #title>
-        <van-button round><van-icon name="search" />搜索</van-button>
+        <van-button round @click="$router.push('/search')"
+          ><van-icon name="search" />搜索</van-button
+        >
       </template>
     </van-nav-bar>
     <van-tabs v-model="active" swipeable>
@@ -36,8 +38,7 @@ export default {
   data() {
     return {
       active: 0,
-      MyChannels: [],
-      show: false
+      MyChannels: []
     }
   },
   components: {
@@ -56,7 +57,7 @@ export default {
     async getMyChannels() {
       try {
         if (!this.isLogin) {
-          const MyChannels = await getMyChannelsByLocal()
+          const MyChannels = getMyChannelsByLocal()
           if (MyChannels) {
             this.MyChannels = MyChannels
           } else {
@@ -65,6 +66,8 @@ export default {
           }
         } else {
           // 如果是登录状态
+          const { data } = await getMyChannels()
+          this.MyChannels = data.data.channels
         }
       } catch (error) {
         this.$toast.fail('请重新获取数据')
@@ -91,7 +94,7 @@ export default {
     ChangeActive(active) {
       this.active = active
     },
-    async AddMyChannel(channel) {
+    async AddChannel(channel) {
       // 添加频道
       this.MyChannels.push(channel)
       if (!this.isLogin) {
