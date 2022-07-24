@@ -71,7 +71,7 @@ export default {
     // 获取下一页的数据
     async LoadNextPage() {
       try {
-        console.log('加载了数据')
+        // console.log('加载了数据')
         const { data } = await getArticleList(this.id, this.pre_timestamp)
         if (!data.data.pre_timestamp) {
           this.finished = true

@@ -5,12 +5,14 @@
       v-if="articleInfo.cover.type === 0"
       :title="articleInfo.title"
       :label="articleDesc"
+      :to="`/detail/${articleInfo.art_id}`"
     />
     <!-- 渲染一张图片 -->
     <van-cell
       v-if="articleInfo.cover.type === 1"
       :title="articleInfo.title"
       :label="articleDesc"
+      :to="`/detail/${articleInfo.art_id}`"
     >
       <van-image
         width="3rem"
@@ -19,14 +21,24 @@
       ></van-image>
     </van-cell>
     <!-- 渲染3图片 -->
-    <van-cell v-if="articleInfo.cover.type === 3" :title="articleInfo.title">
+    <van-cell
+      v-if="articleInfo.cover.type === 3"
+      :title="articleInfo.title"
+      :to="`/detail/${articleInfo.art_id}`"
+    >
       <template #label>
         <!-- 图片 -->
         <div>
-          <van-image v-for="item in articleInfo.cover.images" :key="item" width="3rem" height="2rem" :src="item"></van-image>
+          <van-image
+            v-for="(item, index) in articleInfo.cover.images"
+            :key="index"
+            width="3rem"
+            height="2rem"
+            :src="item"
+          ></van-image>
         </div>
         <!-- 文章描述 -->
-        <span>{{articleDesc}}</span>
+        <span>{{ articleDesc }}</span>
       </template>
     </van-cell>
   </div>
