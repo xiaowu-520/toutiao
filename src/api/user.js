@@ -25,3 +25,29 @@ export const getUserInfo = () => {
     url: '/v1_0/user'
   })
 }
+
+// 获取个人资料
+export const getMyInfo = () => {
+  return request({
+    url: '/v1_0/user/profile'
+  })
+}
+
+// 编辑个人资料
+export const editMyInfo = (data) => {
+  return request({
+    url: '/v1_0/user/profile',
+    method: 'PATCH',
+    data
+  })
+}
+
+// 编辑头像
+export const userPhoto = (photo) => {
+  return request({
+    url: '/v1_0/user/photo',
+    method: 'PATCH',
+    data: photo
+
+  })
+}

@@ -7,11 +7,11 @@
       <template #title>
         <div class="title-wrap">
           <div class="username">{{ Comments.aut_name }}</div>
-          <van-button class="like-btn">
+          <van-button class="like-btn" @click="onCommentsLike">
             <template #icon>
               <span class="iconfont icon-dianzan2"></span>
             </template>
-            <span>赞</span>
+            <span>{{ Comments.like_count || '赞' }}</span>
           </van-button>
         </div>
       </template>
@@ -20,8 +20,8 @@
           <p class="comment-content">{{ Comments.content }}</p>
           <div class="bottom-info">
             <span class="comment-pubdate"> {{ articleCom }}</span>
-            <van-button class="reply-btn">
-              <span>回复 </span>
+            <van-button class="reply-btn" @click="replyCommets">
+              <span> 回复 {{ Comments.reply_count }} </span>
             </van-button>
           </div>
         </div>
@@ -32,7 +32,7 @@
 
 <script>
 import dayjs from '@/utils/dayjs'
-
+import { addCommentLike, deleteCommentLike } from '@/api/comment'
 export default {
   data() {
     return {}
@@ -41,10 +41,41 @@ export default {
     Comments: {
       type: Object,
       required: true
+    },
+    commentnum: {
+      type: Number
     }
   },
 
-  methods: {},
+  methods: {
+    // 评论点赞
+    async onCommentsLike() {
+      // this.commentsLike = this.Comments.like_count
+      try {
+        if (this.Comments.is_liking) {
+          await addCommentLike(this.Comments.com_id)
+          this.$parent.$options.parent.articleComments[
+            this.commentnum
+          ].is_liking = false
+          this.$parent.$options.parent.articleComments[this.commentnum]
+            .like_count--
+        } else {
+          await deleteCommentLike(this.Comments.com_id)
+          this.$parent.$options.parent.articleComments[
+            this.commentnum
+          ].is_liking = true
+          this.$parent.$options.parent.articleComments[this.commentnum]
+            .like_count++
+        }
+      } catch (error) {
+        console.log(error)
+      }
+    },
+    // 点击回复
+    replyCommets() {
+      this.$emit('onReply', this.Comments)
+    }
+  },
   computed: {
     // 评论时间格式化
     articleCom() {

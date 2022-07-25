@@ -12,7 +12,20 @@
         <div>{{ articleDesc }}</div>
       </template>
       <template #default>
-        <van-button class="attention">+关注 </van-button>
+        <van-button
+          class="attention"
+          v-if="!articles.is_followed"
+          :loading="followLoading"
+          @click="followed"
+          >+关注
+        </van-button>
+        <van-button
+          class="attention"
+          v-else
+          :loading="followLoading"
+          @click="followed"
+          >已关注
+        </van-button>
       </template>
     </van-cell>
     <div class="article-content markdown-body" v-html="articles.content"></div>
@@ -22,24 +35,38 @@
 
 <script>
 import dayjs from '@/utils/dayjs'
-
+import { addFollow, deleteFollow } from '@/api/article'
 import '@/assets/css/news.css'
 export default {
   data() {
-    return {}
+    return {
+      followLoading: false
+    }
   },
   props: {
-    ArticleId: {
-      type: String,
-      required: true
-    },
     articles: {
       type: Object,
       required: true
     }
   },
 
-  methods: {},
+  methods: {
+    // 关注取消用户
+    async followed() {
+      this.followLoading = true
+      try {
+        if (this.articles.is_followed) {
+          await addFollow(this.articles.aut_id)
+        } else {
+          await deleteFollow(this.articles.aut_id)
+        }
+        this.$emit('isFollowed', !this.articles.is_followed)
+      } catch (error) {
+        console.log(error)
+      }
+      this.followLoading = false
+    }
+  },
   //   文章时间格式化
   computed: {
     articleDesc() {

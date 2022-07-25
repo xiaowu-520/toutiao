@@ -17,7 +17,7 @@
           </van-col>
           <van-col span="10">
             <van-row class="code-row" type="flex" align="center" justify="end">
-              <van-button class="code-btn" round size="mini"
+              <van-button class="code-btn" round size="mini" to="/user"
                 >编辑资料</van-button
               >
             </van-row>

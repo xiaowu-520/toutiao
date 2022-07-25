@@ -38,6 +38,10 @@ const routes = [
   {
     path: '/detail/:articleId',
     component: () => import('@/views/Detail')
+  },
+  {
+    path: '/user',
+    component: () => import('@/views/User')
   }
 ]
 
